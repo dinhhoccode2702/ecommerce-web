@@ -41,3 +41,30 @@ export const validateCoupon = async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
+
+// Seed coupon cho user (chỉ dùng để test/development)
+export const seedCoupon = async (req, res) => {
+    try {
+        // Xóa coupon cũ của user (nếu có)
+        await Coupon.findOneAndDelete({ userId: req.user._id });
+
+        // Tạo coupon mới
+        const newCoupon = new Coupon({
+            code: "GIFT" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+            discountPercentage: 10,
+            expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 ngày
+            userId: req.user._id,
+            isActive: true,
+        });
+
+        await newCoupon.save();
+
+        res.status(201).json({
+            message: "Coupon created successfully",
+            coupon: newCoupon,
+        });
+    } catch (error) {
+        console.log("Error in seedCoupon controller", error.message);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};

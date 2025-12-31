@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { MoveRight } from "lucide-react";
 import axios from "../lib/axios";
 import { loadStripe } from "@stripe/stripe-js";
+import toast from "react-hot-toast";
 
 const stripePromise = loadStripe(
     "pk_test_51SB2hRGlJgVQJxU5iTFPBtqTrryApXWIRxSkx89FUfMxil7se4PU8SmlQGAqXt2u1VFJDk2YgF5rWFVcrWQ8MKVu00LpBVsln9"
@@ -20,29 +21,31 @@ const OrderSummary = () => {
 
     // 📌 Xử lý checkout với Stripe
     const handlePayment = async () => {
+        if (!cart || cart.length === 0) {
+            toast.error("Your cart is empty");
+            return;
+        }
+
         setIsLoading(true);
         try {
-            const stripe = await stripePromise;
-
             // 🔴 BACKEND: POST /api/payments/create-checkout-session
             const res = await axios.post("/payments/create-checkout-session", {
                 products: cart,
                 couponCode: coupon ? coupon.code : null,
             });
 
-            const session = res.data;
-
-            // Redirect sang Stripe Checkout
-            const result = await stripe.redirectToCheckout({
-                sessionId: session.id,
-            });
-
-            if (result.error) {
-                console.error("Error:", result.error);
+            const { url } = res.data;
+            
+            if (url) {
+                // Redirect trực tiếp đến Stripe Checkout
+                window.location.href = url;
+            } else {
+                throw new Error("No checkout URL received");
             }
         } catch (error) {
             console.error("Error processing payment:", error);
-        } finally {
+            const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || "Error processing payment";
+            toast.error(errorMessage);
             setIsLoading(false);
         }
     };

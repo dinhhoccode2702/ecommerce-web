@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
+import axios from "../lib/axios";
+import { Link } from "react-router-dom";
 
 const GiftCouponCard = () => {
     const [coupon, setCoupon] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Mock coupon for UI testing
-        setTimeout(() => {
-            setCoupon({
-                code: "GIFT20",
-                discountPercentage: 20,
-                expirationDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-            });
-            setLoading(false);
-        }, 500);
+        fetchCoupon();
     }, []);
+
+    const fetchCoupon = async () => {
+        try {
+            const res = await axios.get("/coupons");
+            setCoupon(res.data);
+        } catch (error) {
+            console.error("Error fetching coupon:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -25,28 +30,33 @@ const GiftCouponCard = () => {
         );
     }
 
-    if (!coupon) {
+    if (!coupon || !coupon.isActive) {
         return null;
     }
 
     return (
-        <div className='bg-gradient-to-r from-emerald-700 to-emerald-900 rounded-lg p-4 shadow-lg'>
-            <div className='flex items-center justify-between'>
-                <div>
-                    <p className='text-emerald-100 text-sm font-medium'>Your Available Coupon</p>
-                    <p className='text-white text-2xl font-bold mt-1'>{coupon.code}</p>
-                    <p className='text-emerald-200 text-sm mt-1'>
-                        {coupon.discountPercentage}% off your order
-                    </p>
+        <Link to='/coupons' className='block'>
+            <div className='bg-gradient-to-r from-emerald-700 to-emerald-900 rounded-lg p-4 shadow-lg transition-transform hover:scale-105 cursor-pointer'>
+                <div className='flex items-center justify-between'>
+                    <div>
+                        <p className='text-emerald-100 text-sm font-medium'>Your Available Coupon</p>
+                        <p className='text-white text-2xl font-bold mt-1'>{coupon.code}</p>
+                        <p className='text-emerald-200 text-sm mt-1'>
+                            {coupon.discountPercentage}% off your order
+                        </p>
+                    </div>
+                    <div className='text-right'>
+                        <p className='text-emerald-200 text-xs'>Expires</p>
+                        <p className='text-white text-sm font-medium'>
+                            {new Date(coupon.expirationDate).toLocaleDateString()}
+                        </p>
+                    </div>
                 </div>
-                <div className='text-right'>
-                    <p className='text-emerald-200 text-xs'>Expires</p>
-                    <p className='text-white text-sm font-medium'>
-                        {new Date(coupon.expirationDate).toLocaleDateString()}
-                    </p>
-                </div>
+                <p className='text-emerald-100 text-xs mt-2 text-center'>
+                    Click to view details
+                </p>
             </div>
-        </div>
+        </Link>
     );
 };
 
