@@ -6,8 +6,8 @@ const router = express.Router();
 
 router.get("/", protectRoute, adminRoute, async (req, res) => {
     try {
-        const analyticsData = await getAnalyticsData(req, res);
-        const dailySalesData = await getDailySalesData(req, res);
+        const analyticsData = await getAnalyticsData();
+        const dailySalesData = await getDailySalesData();
 
         res.json({
             analyticsData,

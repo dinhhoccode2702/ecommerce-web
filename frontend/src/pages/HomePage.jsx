@@ -23,7 +23,11 @@ const HomePage = () => {
                         in fashion, electronics, and more.
                     </p>
                 </div>
-
+                {/* {loading && (
+                    <div className='flex justify-center items-center'>
+                        <LoadingSpinner />
+                    </div>
+                )} */}
                 {/* Featured Products */}
                 {!loading && products.length > 0 && (
                     <FeaturedProducts featuredProducts={products} />

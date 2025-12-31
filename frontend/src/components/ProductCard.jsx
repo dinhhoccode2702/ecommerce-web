@@ -7,6 +7,9 @@ const ProductCard = ({ product }) => {
     const { user } = useUserStore();
     const { addToCart } = useCartStore();
 
+    // Debug: log product data
+    console.log("ProductCard received:", product?.name, "| Image:", product?.image);
+
     const handleAddToCart = () => {
         if (!user) {
             toast.error("Please login to add products to cart", { id: "login" });
@@ -17,13 +20,19 @@ const ProductCard = ({ product }) => {
 
     return (
         <div className='flex w-full relative flex-col overflow-hidden rounded-lg border border-gray-700 shadow-lg'>
-            <div className='relative mx-3 mt-3 flex h-60 overflow-hidden rounded-xl'>
+            <div className='relative mx-3 mt-3 rounded-xl' style={{ height: '240px', backgroundColor: '#374151' }}>
                 <img
-                    className='object-cover w-full'
                     src={product.image}
                     alt={product.name}
+                    style={{ 
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block',
+                        borderRadius: '0.75rem'
+                    }}
                 />
-                <div className='absolute inset-0 bg-black bg-opacity-20' />
+                <div className='absolute inset-0 bg-black' style={{ opacity: 0.2, borderRadius: '0.75rem' }}></div>
             </div>
 
             <div className='mt-4 px-5 pb-5'>

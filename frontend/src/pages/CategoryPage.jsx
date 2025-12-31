@@ -27,7 +27,7 @@ const CategoryPage = () => {
                 </h1>
 
                 {/* No Products Found */}
-                {products.length === 0 && (
+                {(!products || products.length === 0) && (
                     <div className='flex flex-col items-center justify-center py-16'>
                         <p className='text-xl text-gray-400'>
                             No products found in this category
@@ -37,7 +37,7 @@ const CategoryPage = () => {
 
                 {/* Products Grid */}
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
-                    {products.map((product) => (
+                    {products?.map((product) => (
                         <ProductCard key={product._id} product={product} />
                     ))}
                 </div>

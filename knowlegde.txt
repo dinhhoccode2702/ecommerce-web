@@ -62,3 +62,6 @@ useEffect, zustand
 nếu muốn dùng dữ liệu nào trong trang đấy thì cần khai báo. ví dụ như có các trạng thái của 1
 sự kiện, thì phải khai báo tất cả để còn so sánh, hiển thị cho chính xác.
 xử lý ảnh.
+
+json(): trả về mảng trực tiếp
+json({}): trả về object, muốn lấy phải .dữ liệu
