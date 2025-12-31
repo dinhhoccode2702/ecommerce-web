@@ -1,0 +1,64 @@
+npm init: khởi tạo 1 dự án node.js
+
+dùng node.js thì lệnh chạy sẽ là npm run dev / npm start, file package.json để ở đâu thì 
+áp dụng cho phần code đó
+
+
+file .env có những key như port, access token, refresh token là tự tạo, còn lại thì
+tùy theo cái sử dụng. db cũng có thể, tùy vào cái mình sử dụng
+
+async: một hàm đợi. dùng để đánh dấu hàm bất đồng bộ. câu lệnh nào cần bất đồng bộ thì thêm await vào là xong.
+tại sao cần bất đồng bộ?...
+
+named export: khai bảo { tên hàm chính xác}
+default export: khai báo: tên hàm : gì cũng được
+
+lib chỉ cần khai báo 1 lần ở server mà thôi.
+
+redis chỉ chạy khi gọi controller, ý là logic của nó nằm ở đó. nên tự cấu hình dotenv cho redis
+bởi trong code redis dùng new Redis(). đây là function call, nó sẽ chạy ngay. tuy nhiên chưa có url nên lỗi
+nếu dùng async redis = { new...} thì oke
+
+cloudinary: config xong lưu vào sdk?
+
+để ý cách sử dụng các thư viện>
+
+schema trong mongoose có 2 phần, 1 là object( dữ liệu), 2 là option(hành vi)
+
+bcryt dùng để hash password. theo quy tắc tạo ra salt, hash pass =  salt -> pass trong db: hash+salt. so sánh
+chỉ lấy salt ra gen lại.
+
+cookie: lưu token ở trình duyệt, tự động gửi, chặn js ko cho đọc
+
+redis lưu refresh token, dùng để so sánh, tìm = userid
+
+dạng dữ liệu mà frontend gửi lên ban đầu là raw stream, bao gồm các thuộc tính mà client cho vào
+sau đó thì middleware sẽ lấy accesstoken, để lấy ra id và trả về thông tin của user đó.
+sau đó gắn vào req để đi tiếp các tầng tiếp theo.
+
+redis lưu string dùng redis.set để lưu, redis.get để lấy.
+db lưu object => cần chuyển về json.
+
+dùng cloudinary: tạo 1 cloudinaryresponse xong lưu vào
+trick làm hàm bật tắt: gán a = !a
+
+lấy dữ liệu ở params phải đúng tên {tên}, không thì phải đổi tên {tên: tên mới}
+
+note lại thah toán. stripe này làm theo hướng dẫn.
+logic tạo biểu đồ
+
+set up frontend
+
+npm create vite@latestL: khởi tạo 1 vite
+trong lib tạo file axios, mục đích tạo để kết nối với backend. nó giữ port của backend để dễ 
+dàng code ngắn hơn.
+withCredentials: true: cho phép gửi nhận cookie qua http
+
+== → JS tự ép kiểu "5" → 5
+=== → không ép → khác kiểu → false
+
+useState
+useEffect, zustand
+nếu muốn dùng dữ liệu nào trong trang đấy thì cần khai báo. ví dụ như có các trạng thái của 1
+sự kiện, thì phải khai báo tất cả để còn so sánh, hiển thị cho chính xác.
+xử lý ảnh.
