@@ -25,7 +25,6 @@
 - [Cấu hình](#-cấu-hình)
 - [Chạy ứng dụng](#-chạy-ứng-dụng)
 - [API Endpoints](#-api-endpoints)
-- [Tối ưu hóa](#-tối-ưu-hóa)
 
 ---
 
@@ -218,21 +217,6 @@ npm run dev
 ```
 App sẽ chạy tại `http://localhost:5173`
 
-### Production mode
-
-**Backend:**
-```bash
-cd backend
-npm start
-```
-
-**Frontend:**
-```bash
-cd frontend
-npm run build
-npm run preview
-```
-
 ---
 
 ## 📡 API Endpoints
@@ -287,50 +271,6 @@ npm run preview
 | Method | Endpoint | Mô tả |
 |--------|----------|-------|
 | GET | `/health` | Kiểm tra trạng thái server |
-
----
-
-## ⚡ Tối ưu hóa
-
-### Phase 1: Database Indexing
-- Index trên các trường thường xuyên query (email, category, isFeatured...)
-- Compound indexes cho các query phức tạp
-- Text index cho chức năng tìm kiếm
-
-### Phase 2: Health Check & Graceful Shutdown
-- Endpoint `/health` để monitor trạng thái
-- Graceful shutdown đảm bảo đóng kết nối an toàn
-- Tương thích với Docker/Kubernetes
-
-### Phase 3: Redis Caching
-- Cache featured products, products by category
-- Cache invalidation tự động khi data thay đổi
-- Giảm 70-80% database load
-
----
-
-## 📊 Performance Metrics
-
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| GET /products/featured | ~100ms | ~5ms | 95% faster |
-| Database queries/min | 1000 | 200 | 80% reduction |
-
----
-
-## 🔜 Roadmap
-
-- [ ] Microservices Architecture
-- [ ] Kafka Message Queue
-- [ ] Distributed Tracing
-- [ ] Kubernetes Deployment
-- [ ] CI/CD Pipeline
-
----
-
-## 📄 License
-
-ISC License
 
 ---
 
