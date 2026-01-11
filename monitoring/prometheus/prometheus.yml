@@ -1,0 +1,49 @@
+# ===========================================
+# PROMETHEUS CONFIGURATION
+# ===========================================
+# File này cấu hình Prometheus - hệ thống thu thập metrics
+# Prometheus sẽ "scrape" (lấy) metrics từ các endpoint định kỳ
+
+global:
+  # Tần suất scrape mặc định - mỗi 15 giây lấy metrics 1 lần
+  scrape_interval: 15s
+  
+  # Timeout cho mỗi lần scrape
+  scrape_timeout: 10s
+  
+  # Tần suất đánh giá rules (alerting rules)
+  evaluation_interval: 15s
+
+# ===========================================
+# SCRAPE CONFIGS - Cấu hình lấy metrics từ đâu
+# ===========================================
+scrape_configs:
+  # -----------------------------------------
+  # 1. Prometheus tự monitor chính nó
+  # -----------------------------------------
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    # Giải thích: Prometheus cũng expose metrics của chính nó
+    # Endpoint: http://localhost:9090/metrics
+
+  # -----------------------------------------
+  # 2. Shopping App Backend (Node.js)
+  # -----------------------------------------
+  - job_name: 'shopping-backend'
+    static_configs:
+      # Nếu chạy local (không Docker)
+      - targets: ['host.docker.internal:5000']
+        labels:
+          environment: 'development'
+          service: 'backend'
+    
+    # Endpoint metrics (mặc định là /metrics)
+    metrics_path: /metrics
+    
+    # Scheme HTTP hoặc HTTPS
+    scheme: http
+    
+    # Giải thích các labels:
+    # - environment: môi trường (dev/staging/prod)
+    # - service: tên service để phân biệt trong Grafana

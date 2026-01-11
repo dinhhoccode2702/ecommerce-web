@@ -48,6 +48,12 @@ const userSchema = new mongoose.Schema(
     }
 );
 
+// 1. Index cho query theo role (admin/customer)
+userSchema.index({ role: 1 });
+
+// 2. Index cho sắp xếp theo ngày tạo
+userSchema.index({ createdAt: -1 });
+
 //hash password before save
 userSchema.pre("save", async function () {
     if(!this.isModified("password")) {

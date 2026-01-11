@@ -29,9 +29,21 @@ const productSchema = new mongoose.Schema(
         },
     },
     {
-        timpstamps: true,
+        timestamps: true,
     }
 )
+
+// Tìm sản phẩm theo danh mục - dùng rất nhiều
+productSchema.index({ category: 1 });
+
+// Lấy sản phẩm nổi bật - trang chủ
+productSchema.index({ isFeatured: 1 });
+
+// Tìm sản phẩm featured trong 1 category
+productSchema.index({ category: 1, isFeatured: 1 });
+
+// Index cho sắp xếp theo ngày tạo (mới nhất)
+productSchema.index({ createdAt: -1 });
 
 const Product = mongoose.model("Product", productSchema);
 

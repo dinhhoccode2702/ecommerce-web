@@ -33,6 +33,9 @@ const couponSchema = new mongoose.Schema(
     }
 );
 
+//Compound index: Coupon còn active và chưa hết hạn
+couponSchema.index({ isActive: 1, expirationDate: 1 });
+
 const Coupon = mongoose.model("Coupon", couponSchema);
 
 export default Coupon;

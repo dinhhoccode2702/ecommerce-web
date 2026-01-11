@@ -65,3 +65,9 @@ xử lý ảnh.
 
 json(): trả về mảng trực tiếp
 json({}): trả về object, muốn lấy phải .dữ liệu
+
+locust: tạo traffic giả lập, đo response time, throughtput pip install locust
+cấu trúc locust:
+grafana+ prometheus: UI theo dõi real-time.
+
+signal, health check và gracefull shutdown

@@ -1,43 +1,28 @@
-import {redisClient} from "../lib/redis.js";
 import cloudinary from "../lib/cloudinary.js";
 import Product from "../models/product.model.js";
 
-export const getAllProducts = async ( req, res) => {
+export const getAllProducts = async (req, res) => {
     try {
         const products = await Product.find({});
         res.status(200).json({ products });
     } catch (error) {   
         console.log(error);
-        res.status(500).json({ message: "Server error"});
+        res.status(500).json({ message: "Server error" });
     }   
 }
 
 export const getFeaturedProducts = async (req, res) => {
     try {
-        // Kiểm tra cache trước
-        let featuredProducts = await redisClient.get("featuredProducts");
-        if(featuredProducts) {
-            return res.status(200).json({ products: JSON.parse(featuredProducts) });
-        }
+        const featuredProducts = await Product.find({ isFeatured: true }).lean();
 
-        // Nếu không có cache, lấy từ DB
-        featuredProducts = await Product.find({ isFeatured: true}).lean();
-        if(!featuredProducts || featuredProducts.length === 0) {
-            return res.status(404).json({ message: "No featured products found"});
+        if (!featuredProducts || featuredProducts.length === 0) {
+            return res.status(404).json({ message: "No featured products found" });
         }
-
-        // Lưu vào cache với TTL 1 giờ (3600 giây)
-        await redisClient.set(
-            "featuredProducts",
-            JSON.stringify(featuredProducts),
-            "EX",
-            3600
-        );
 
         res.status(200).json({ products: featuredProducts });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: "Server error"});   
+        res.status(500).json({ message: "Server error" });   
     }
 }
 
@@ -47,8 +32,8 @@ export const createProduct = async (req, res) => {
 
         let cloudinaryResponse = null;
 
-        if(image) {
-            cloudinaryResponse = await cloudinary.uploader.upload(image, {folder: "products"});
+        if (image) {
+            cloudinaryResponse = await cloudinary.uploader.upload(image, { folder: "products" });
         }
 
         const product = await Product.create({
@@ -58,27 +43,27 @@ export const createProduct = async (req, res) => {
             isFeatured,
             image: cloudinaryResponse ? cloudinaryResponse.secure_url : null,
             category,
-            });
+        });
 
         res.status(201).json({
             message: "Product created successfully",
             product,
-        })
+        });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: "Server error"});
+        res.status(500).json({ message: "Server error" });
     }
 }
 
-export const deleteProduct = async ( req, res) => {
+export const deleteProduct = async (req, res) => {
     try {
         const { productId } = req.params;
         const product = await Product.findById(productId);
-        if(!product) {
-            return res.status(404).json({ message: "Product not found"});
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
         }
 
-        if(product.image) {
+        if (product.image) {
             const publicId = product.image.split("/").pop().split(".")[0];
             try {
                 await cloudinary.uploader.destroy(`products/${publicId}`);
@@ -89,10 +74,11 @@ export const deleteProduct = async ( req, res) => {
         }
 
         await Product.findByIdAndDelete(productId);
-        res.status(200).json({ message: "Product deleted successfully"});
+
+        res.status(200).json({ message: "Product deleted successfully" });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: "Server error"});
+        res.status(500).json({ message: "Server error" });
     }
 }
 
@@ -120,7 +106,7 @@ export const getRecommendedProducts = async (req, res) => {
     }
 };
 
-export const getProductsByCategory = async ( req, res) => {
+export const getProductsByCategory = async (req, res) => {
     const { category } = req.params;
     try {
         const products = await Product.find({ category });
@@ -138,7 +124,6 @@ export const toggleFeaturedProduct = async (req, res) => {
         if (product) {
             product.isFeatured = !product.isFeatured;
             const updatedProduct = await product.save();
-            await updateFeaturedProductsCache();
             res.json(updatedProduct);
         } else {
             res.status(404).json({ message: "Product not found" });
@@ -148,13 +133,3 @@ export const toggleFeaturedProduct = async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
-
-async function updateFeaturedProductsCache() {
-    try {
-        // Xóa cache cũ - lần request tiếp theo sẽ lấy data mới từ DB
-        await redisClient.del("featuredProducts");
-        console.log("Featured products cache cleared");
-    } catch (error) {
-        console.log("Error in update cache function:", error);
-    }
-}
