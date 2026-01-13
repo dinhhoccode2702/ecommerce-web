@@ -71,3 +71,9 @@ cấu trúc locust:
 grafana+ prometheus: UI theo dõi real-time.
 
 signal, health check và gracefull shutdown
+
+redis caching
+
+invalidatecache: những hàm mà khiến database thay đổi thì nên có cái này để xóa dữ liệu
+trong cache
+
