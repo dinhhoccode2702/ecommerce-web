@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import { connectDB } from "./lib/db.js";
 import { redisClient } from "./lib/redis.js";
 import { metricsMiddleware, metricsEndpoint } from "./lib/metrics.js";
+import { generalLimiter, authLimiter } from "./lib/rateLimiter.js";
 import authRouters from "./routes/auth.route.js";
 import productRoutes from "./routes/product.route.js";
 import cartRoutes from "./routes/cart.route.js";
@@ -79,12 +80,17 @@ app.get("/health/ready", async (req, res) => {
     }
 });
 
-app.use("/api/auth", authRouters);
-app.use("/api/products", productRoutes);
-app.use("/api/cart", cartRoutes);
-app.use("/api/coupons", couponRoutes);
-app.use("/api/payments", paymentRoutes); 
-app.use("/api/analytics", analyticsRoutes); 
+// RATE LIMITING
+
+// Auth routes
+app.use("/api/auth", authLimiter, authRouters);
+
+// general limit
+app.use("/api/products", generalLimiter, productRoutes);
+app.use("/api/cart", generalLimiter, cartRoutes);
+app.use("/api/coupons", generalLimiter, couponRoutes);
+app.use("/api/payments", generalLimiter, paymentRoutes); 
+app.use("/api/analytics", generalLimiter, analyticsRoutes); 
 
 const PORT = process.env.PORT || 5000;
 

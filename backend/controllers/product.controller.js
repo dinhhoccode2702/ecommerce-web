@@ -1,6 +1,7 @@
 import cloudinary from "../lib/cloudinary.js";
 import Product from "../models/product.model.js";
 import { getCache, setCache, invalidateCache, CACHE_KEYS, CACHE_TTL } from "../lib/redis.js";
+import { retryHttpRequest } from "../lib/retry.js";
 
 export const getAllProducts = async (req, res) => {
     try {
@@ -49,7 +50,19 @@ export const createProduct = async (req, res) => {
         let cloudinaryResponse = null;
 
         if (image) {
-            cloudinaryResponse = await cloudinary.uploader.upload(image, { folder: "products" });
+            // RETRY PATTERN
+            cloudinaryResponse = await retryHttpRequest(
+                async () => {
+                    return await cloudinary.uploader.upload(image, { folder: "products" });
+                },
+                {
+                    maxRetries: 3,
+                    initialDelay: 1000,
+                    onRetry: (attempt, error, delay) => {
+                        console.log(`🔄 Cloudinary upload retry attempt ${attempt}: ${error.message}`);
+                    }
+                }
+            );
         }
 
         const product = await Product.create({

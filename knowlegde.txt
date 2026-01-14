@@ -66,6 +66,8 @@ xử lý ảnh.
 json(): trả về mảng trực tiếp
 json({}): trả về object, muốn lấy phải .dữ liệu
 
+
+
 locust: tạo traffic giả lập, đo response time, throughtput pip install locust
 cấu trúc locust:
 grafana+ prometheus: UI theo dõi real-time.
@@ -77,3 +79,8 @@ redis caching
 invalidatecache: những hàm mà khiến database thay đổi thì nên có cái này để xóa dữ liệu
 trong cache
 
+update docker:
+
+ratelimiting: phải cài express-rate-limit
+
+retry: mọi thứ về nó.
